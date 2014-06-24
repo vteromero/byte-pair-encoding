@@ -4,7 +4,7 @@
 //
 // Author: Vicente Romero <vteromero@gmail.com>
 //
-// A file compressor tool that implements Byte Pair Encoding scheme.
+// A file compression tool that implements the Byte Pair Encoding algorithm.
 
 #include <cstdio>
 #include <cstdlib>
