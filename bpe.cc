@@ -30,7 +30,7 @@ struct Config
 
 static void usage(const char *name)
 {
-    printf(
+    fprintf(stderr,
 "bpe: a file compressor that implements Byte Pair Encoding.\n"
 "\n"
 "Usage: %s OPTIONS [<infile> <outfile>]\n"
@@ -88,7 +88,7 @@ static int parseOptions(int argc, char **argv)
         {
             if(argv[i][0] == '-')
             {
-                printf("Unrecognized option: '%s'\n", argv[i]);
+                fprintf(stderr, "Unrecognized option: '%s'\n", argv[i]);
                 exit(1);
             }
             else
@@ -113,32 +113,32 @@ static void validateOptions(int argc, char **argv, int lastopt)
 
     if(config.compress_opt && config.decompress_opt)
     {
-        printf("Incompatible options -c and -d\n");
+        fprintf(stderr, "Incompatible options -c and -d\n");
         exit(1);
     }
 
     if(config.block_size_opt && !config.compress_opt)
     {
-        printf("-b option is only compatible with -c option\n");
+        fprintf(stderr, "-b option is only compatible with -c option\n");
         exit(1);
     }
 
     if(config.verbose_opt && !config.compress_opt)
     {
-        printf("-v option is only compatible with -c option\n");
+        fprintf(stderr, "-v option is only compatible with -c option\n");
         exit(1);
     }
 
     if((config.block_size < min_block_size) || (config.block_size > max_block_size))
     {
-        printf("Incorrect block size. It must be in the range [%d, %d]\n",
+        fprintf(stderr, "Incorrect block size. It must be in the range [%d, %d]\n",
             min_block_size, max_block_size);
         exit(1);
     }
 
     if(lastargs != 2)
     {
-        printf("Bad number of arguments. Use -h to display more information\n");
+        fprintf(stderr, "Bad number of arguments. Use -h to display more information\n");
         exit(1);
     }
 

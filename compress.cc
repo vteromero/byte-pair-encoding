@@ -215,7 +215,7 @@ void compress(
     if(verbose)
     {
         double reduction = (total_size - total_compressed_size) / (double)total_size;
-        printf("Reduction: %.2f%%\n", reduction * 100.0);
+        fprintf(stderr, "Reduction: %.2f%%\n", reduction * 100.0);
     }
 
     fclose(infile);

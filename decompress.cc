@@ -99,7 +99,7 @@ void decompress(const char *infilename, const char *outfilename)
 
         if(read_size != 1)
         {
-            printf("%s: Bad format\n", infilename);
+            fprintf(stderr, "%s: Bad format\n", infilename);
             closeAndExit(1);
         }
 
@@ -108,14 +108,14 @@ void decompress(const char *infilename, const char *outfilename)
             read_size = fread(&byte, 1, 1, infile);
             if(read_size != 1)
             {
-                printf("%s: Bad format\n", infilename);
+                fprintf(stderr, "%s: Bad format\n", infilename);
                 closeAndExit(1);
             }
 
             read_size = fread(&bytepair, 2, 1, infile);
             if(read_size != 1)
             {
-                printf("%s: Bad format\n", infilename);
+                fprintf(stderr, "%s: Bad format\n", infilename);
                 closeAndExit(1);
             }
 
@@ -125,14 +125,14 @@ void decompress(const char *infilename, const char *outfilename)
         read_size = fread(&data_size, 2, 1, infile);
         if(read_size != 1)
         {
-            printf("%s: Bad format\n", infilename);
+            fprintf(stderr, "%s: Bad format\n", infilename);
             closeAndExit(1);
         }
 
         read_size = fread(buffer, 1, data_size, infile);
         if(read_size != data_size)
         {
-            printf("%s: Bad format\n", infilename);
+            fprintf(stderr, "%s: Bad format\n", infilename);
             closeAndExit(1);
         }
 
