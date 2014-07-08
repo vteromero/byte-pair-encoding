@@ -21,6 +21,7 @@ struct Config
     bool help_opt;
     bool compress_opt;
     bool decompress_opt;
+    bool stdout_opt;
     bool block_size_opt;
     bool verbose_opt;
     int block_size;
@@ -28,22 +29,64 @@ struct Config
     char *outfile;
 } config;
 
+static void calculateOutputFileName()
+{
+    config.outfile = NULL;
+
+    if(config.stdout_opt || (config.infile == NULL))
+        return;
+
+    if(config.compress_opt)
+    {
+        int len = strlen(config.infile) + 5;
+
+        config.outfile = new char[len];
+
+        strcpy(config.outfile, config.infile);
+        strcat(config.outfile, ".bpe");
+    }
+    else if(config.decompress_opt)
+    {
+        char *last_dot = strrchr(config.infile, '.');
+        if((last_dot == NULL) || (strcmp(last_dot, ".bpe") != 0))
+        {
+            int len = strlen(config.infile) + 6;
+
+            config.outfile = new char[len];
+
+            strcpy(config.outfile, config.infile);
+            strcat(config.outfile, ".orig");
+        }
+        else
+        {
+            int len = last_dot - config.infile;
+
+            config.outfile = new char[len + 1];
+
+            strncpy(config.outfile, config.infile, len);
+            config.outfile[len] = '\0';
+        }
+    }
+}
+
 static void usage(const char *name)
 {
     fprintf(stderr,
 "bpe: a file compressor that implements Byte Pair Encoding.\n"
 "\n"
-"Usage: %s OPTIONS [<infile> <outfile>]\n"
+"Usage: %s OPTIONS [<file>]\n"
 "\n"
-"  -c --compress        Compress <infile> and write output on <outfile>.\n"
-"  -d --decompress      Decompress <infile> and write output on <outfile>.\n"
+"  -c --compress        Compress <file>. If -o option is not set, the output is written to the\n"
+"                       file \"<file>.bpe\".\n"
+"  -d --decompress      Decompress <file>.\n"
+"  -o --stdout          Write output on standard output. Keep the original file unchanged.\n"
 "  -b --block-size <n>  Block size (default: %d).\n"
 "  -v --verbose         Verbose. Display the percentage reduction.\n"
 "  -h --help            Output this help and exit.\n"
 "\n"
 "Examples:\n"
-"  bpe -c -v test.txt test.txt.bpe\n"
-"  bpe -d test.txt.bpe test.txt\n"
+"  bpe -c -v test.txt\n"
+"  bpe -d test.txt.bpe\n"
 "\n",
     name, default_block_size);
 }
@@ -70,6 +113,10 @@ static int parseOptions(int argc, char **argv)
         else if((strcmp(argv[i], "-d") == 0) || (strcmp(argv[i], "--decompress") == 0))
         {
             config.decompress_opt = true;
+        }
+        else if((strcmp(argv[i], "-o") == 0) || (strcmp(argv[i], "--stdout") == 0))
+        {
+            config.stdout_opt = true;
         }
         else if((strcmp(argv[i], "-b") == 0) || (strcmp(argv[i], "--block-size") == 0))
         {
@@ -111,6 +158,12 @@ static void validateOptions(int argc, char **argv, int lastopt)
         exit(0);
     }
 
+    if(!config.compress_opt && !config.decompress_opt)
+    {
+        fprintf(stderr, "Incorrect arguments: you have to specify either -c option or -d option\n");
+        exit(1);
+    }
+
     if(config.compress_opt && config.decompress_opt)
     {
         fprintf(stderr, "Incompatible options -c and -d\n");
@@ -136,14 +189,15 @@ static void validateOptions(int argc, char **argv, int lastopt)
         exit(1);
     }
 
-    if(lastargs != 2)
+    if(lastargs != 1)
     {
         fprintf(stderr, "Bad number of arguments. Use -h to display more information\n");
         exit(1);
     }
 
     config.infile = argv[lastopt++];
-    config.outfile = argv[lastopt];
+
+    calculateOutputFileName();
 }
 
 int main(int argc, char **argv)
@@ -151,6 +205,7 @@ int main(int argc, char **argv)
     config.help_opt = false;
     config.compress_opt = false;
     config.decompress_opt = false;
+    config.stdout_opt = false;
     config.block_size_opt = false;
     config.verbose_opt = false;
     config.block_size = default_block_size;
@@ -162,9 +217,9 @@ int main(int argc, char **argv)
     validateOptions(argc, argv, lastopt);
 
     if(config.compress_opt)
-        compress(config.infile, config.outfile, config.block_size, config.verbose_opt);
+        compress(config.infile, config.outfile, config.block_size, config.stdout_opt, config.verbose_opt);
     else if(config.decompress_opt)
-        decompress(config.infile, config.outfile);
+        decompress(config.infile, config.outfile, config.stdout_opt);
 
     return 0;
 }

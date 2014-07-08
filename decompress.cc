@@ -17,15 +17,20 @@ using namespace std;
 
 const int max_block_size = 65535;
 
+const char *infname=NULL, *outfname=NULL;
 FILE *infile=NULL, *outfile=NULL;
+bool tostdout = false;
 
 static void closeAndExit(int exit_code)
 {
     if(infile != NULL)
         fclose(infile);
 
-    if(outfile != NULL)
+    if((outfile != NULL) && !tostdout)
         fclose(outfile);
+
+    if((exit_code == 0) && !tostdout)
+        remove(infname);
 
     exit(exit_code);
 }
@@ -67,12 +72,19 @@ static int replaceBytes(
     return data_size;
 }
 
-void decompress(const char *infilename, const char *outfilename)
+void decompress(
+    const char *infilename,
+    const char *outfilename,
+    bool to_stdout)
 {
     uint8_t dict_size, byte;
     uint16_t data_size, bytepair;
     size_t read_size;
     uint8_t buffer[max_block_size];
+
+    infname = infilename;
+    outfname = outfilename;
+    tostdout = to_stdout;
 
     infile = fopen(infilename, "rb");
     if(infile == NULL)
@@ -81,11 +93,18 @@ void decompress(const char *infilename, const char *outfilename)
         closeAndExit(1);
     }
 
-    outfile = fopen(outfilename, "wb");
-    if(outfile == NULL)
+    if(to_stdout)
     {
-        perror(outfilename);
-        closeAndExit(1);
+        outfile = stdout;
+    }
+    else
+    {
+        outfile = fopen(outfilename, "wb");
+        if(outfile == NULL)
+        {
+           perror(outfilename);
+           exit(1);
+        }
     }
 
     do

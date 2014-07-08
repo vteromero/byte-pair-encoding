@@ -9,6 +9,9 @@
 #ifndef DECOMPRESS_H_
 #define DECOMPRESS_H_
 
-void decompress(const char *infilename, const char *outfilename);
+void decompress(
+    const char *infilename,
+    const char *outfilename,
+    bool to_stdout);
 
 #endif // DECOMPRESS_H_

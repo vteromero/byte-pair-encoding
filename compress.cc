@@ -176,6 +176,7 @@ void compress(
     const char *infilename,
     const char *outfilename,
     int block_size,
+    bool to_stdout,
     bool verbose)
 {
     int num_blocks = 0;
@@ -190,11 +191,19 @@ void compress(
         exit(1);
     }
 
-    FILE *outfile = fopen(outfilename, "wb");
-    if(outfile == NULL)
+    FILE *outfile = NULL;
+    if(to_stdout)
     {
-        perror(outfilename);
-        exit(1);
+        outfile = stdout;
+    }
+    else
+    {
+        outfile = fopen(outfilename, "wb");
+        if(outfile == NULL)
+        {
+           perror(outfilename);
+           exit(1);
+        }
     }
 
     do
@@ -219,5 +228,11 @@ void compress(
     }
 
     fclose(infile);
-    fclose(outfile);
+
+    if(!to_stdout)
+    {
+        fclose(outfile);
+
+        remove(infilename);
+    }
 }

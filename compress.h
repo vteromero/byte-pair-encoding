@@ -13,6 +13,7 @@ void compress(
     const char *infilename,
     const char *outfilename,
     int block_size,
+    bool to_stdout,
     bool verbose);
 
 #endif // COMPRESS_H_

@@ -19,23 +19,26 @@ This will generate the binary file (`bpe`).
 You can try this command to compress a file:
 
 ```bash
-./bpe -c test.txt test.txt.bpe
+./bpe -c test.txt
 ```
 
 You can also use other options:
 
 ```bash
 # -b option specifies the block size
-./bpe -b 4096 -c test.txt test.txt.bpe
+./bpe -c -b 4096 test.txt
 
-# -v option show you the reduction percentage
-./bpe -v -c test.txt test.txt.bpe
+# -v option shows you the reduction percentage
+./bpe -c -v test.txt
+
+# -o option is used to write the output to stdout
+./bpe -c -v -o test.txt > test.txt.bpe
 ```
 
 And if you want to decompress a file, you can use this command:
 
 ```bash
-./bpe -d test.txt.bpe test.txt
+./bpe -d test.txt.bpe
 ```
 
 *Note: test.tx is the original file and test.txt.bpe is the compressed file.*
