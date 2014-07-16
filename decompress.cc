@@ -12,10 +12,9 @@
 #include <cstdlib>
 #include <list>
 #include <vector>
+#include "bpe.h"
 
 using namespace std;
-
-const int max_block_size = 65535;
 
 const char *infname=NULL, *outfname=NULL;
 FILE *infile=NULL, *outfile=NULL;
@@ -80,7 +79,7 @@ void decompress(
     uint8_t dict_size, byte;
     uint16_t data_size, bytepair;
     size_t read_size;
-    uint8_t buffer[max_block_size];
+    uint8_t buffer[kMaxBlockSize];
 
     infname = infilename;
     outfname = outfilename;

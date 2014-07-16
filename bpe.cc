@@ -9,25 +9,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include "bpe.h"
 #include "compress.h"
 #include "decompress.h"
 
-const int min_block_size        = 100;
-const int max_block_size        = 65535;
-const int default_block_size    = 8000;
-
-struct Config
-{
-    bool help_opt;
-    bool compress_opt;
-    bool decompress_opt;
-    bool stdout_opt;
-    bool block_size_opt;
-    bool verbose_opt;
-    int block_size;
-    char *infile;
-    char *outfile;
-} config;
+Config config;
 
 static void calculateOutputFileName()
 {
@@ -88,7 +74,7 @@ static void usage(const char *name)
 "  bpe -c -v test.txt\n"
 "  bpe -d test.txt.bpe\n"
 "\n",
-    name, default_block_size);
+    name, kDefaultBlockSize);
 }
 
 static int parseOptions(int argc, char **argv)
@@ -182,10 +168,10 @@ static void validateOptions(int argc, char **argv, int lastopt)
         exit(1);
     }
 
-    if((config.block_size < min_block_size) || (config.block_size > max_block_size))
+    if((config.block_size < kMinBlockSize) || (config.block_size > kMaxBlockSize))
     {
         fprintf(stderr, "Incorrect block size. It must be in the range [%d, %d]\n",
-            min_block_size, max_block_size);
+            kMinBlockSize, kMaxBlockSize);
         exit(1);
     }
 
@@ -208,7 +194,7 @@ int main(int argc, char **argv)
     config.stdout_opt = false;
     config.block_size_opt = false;
     config.verbose_opt = false;
-    config.block_size = default_block_size;
+    config.block_size = kDefaultBlockSize;
     config.infile = NULL;
     config.outfile = NULL;
 
