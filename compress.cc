@@ -13,6 +13,7 @@
 #include <list>
 #include <unordered_set>
 #include <vector>
+#include "bpe.h"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ struct BytePairOccurs
     uint8_t byte2;
     int occurs;
 };
+
+extern Config config;
 
 static void replaceBytes(
     uint8_t byte,
@@ -172,43 +175,38 @@ static int writeBlock(
     return block_size;
 }
 
-void compress(
-    const char *infilename,
-    const char *outfilename,
-    int block_size,
-    bool to_stdout,
-    bool verbose)
+void compress()
 {
     int num_blocks = 0;
-    uint8_t buffer[block_size];
+    uint8_t buffer[config.block_size];
     size_t read_size;
     long long total_size=0, total_compressed_size=0;
 
-    FILE *infile = fopen(infilename, "rb");
+    FILE *infile = fopen(config.infile, "rb");
     if(infile == NULL)
     {
-        perror(infilename);
+        perror(config.infile);
         exit(1);
     }
 
     FILE *outfile = NULL;
-    if(to_stdout)
+    if(config.stdout_opt)
     {
         outfile = stdout;
     }
     else
     {
-        outfile = fopen(outfilename, "wb");
+        outfile = fopen(config.outfile, "wb");
         if(outfile == NULL)
         {
-           perror(outfilename);
+           perror(config.outfile);
            exit(1);
         }
     }
 
     do
     {
-        read_size = fread(buffer, sizeof(uint8_t), block_size, infile);
+        read_size = fread(buffer, sizeof(uint8_t), config.block_size, infile);
         total_size += read_size;
 
         list<uint8_t> byte_block;
@@ -221,7 +219,7 @@ void compress(
 
     } while(!feof(infile));
 
-    if(verbose)
+    if(config.verbose_opt)
     {
         double reduction = (total_size - total_compressed_size) / (double)total_size;
         fprintf(stderr, "Reduction: %.2f%%\n", reduction * 100.0);
@@ -229,10 +227,10 @@ void compress(
 
     fclose(infile);
 
-    if(!to_stdout)
+    if(!config.stdout_opt)
     {
         fclose(outfile);
 
-        remove(infilename);
+        remove(config.infile);
     }
 }

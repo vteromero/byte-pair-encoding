@@ -16,20 +16,20 @@
 
 using namespace std;
 
-const char *infname=NULL, *outfname=NULL;
+extern Config config;
+
 FILE *infile=NULL, *outfile=NULL;
-bool tostdout = false;
 
 static void closeAndExit(int exit_code)
 {
     if(infile != NULL)
         fclose(infile);
 
-    if((outfile != NULL) && !tostdout)
+    if((outfile != NULL) && !config.stdout_opt)
         fclose(outfile);
 
-    if((exit_code == 0) && !tostdout)
-        remove(infname);
+    if((exit_code == 0) && !config.stdout_opt)
+        remove(config.infile);
 
     exit(exit_code);
 }
@@ -71,37 +71,30 @@ static int replaceBytes(
     return data_size;
 }
 
-void decompress(
-    const char *infilename,
-    const char *outfilename,
-    bool to_stdout)
+void decompress()
 {
     uint8_t dict_size, byte;
     uint16_t data_size, bytepair;
     size_t read_size;
     uint8_t buffer[kMaxBlockSize];
 
-    infname = infilename;
-    outfname = outfilename;
-    tostdout = to_stdout;
-
-    infile = fopen(infilename, "rb");
+    infile = fopen(config.infile, "rb");
     if(infile == NULL)
     {
-        perror(infilename);
+        perror(config.infile);
         closeAndExit(1);
     }
 
-    if(to_stdout)
+    if(config.stdout_opt)
     {
         outfile = stdout;
     }
     else
     {
-        outfile = fopen(outfilename, "wb");
+        outfile = fopen(config.outfile, "wb");
         if(outfile == NULL)
         {
-           perror(outfilename);
+           perror(config.outfile);
            exit(1);
         }
     }
@@ -117,7 +110,7 @@ void decompress(
 
         if(read_size != 1)
         {
-            fprintf(stderr, "%s: Bad format\n", infilename);
+            fprintf(stderr, "%s: Bad format\n", config.infile);
             closeAndExit(1);
         }
 
@@ -126,14 +119,14 @@ void decompress(
             read_size = fread(&byte, 1, 1, infile);
             if(read_size != 1)
             {
-                fprintf(stderr, "%s: Bad format\n", infilename);
+                fprintf(stderr, "%s: Bad format\n", config.infile);
                 closeAndExit(1);
             }
 
             read_size = fread(&bytepair, 2, 1, infile);
             if(read_size != 1)
             {
-                fprintf(stderr, "%s: Bad format\n", infilename);
+                fprintf(stderr, "%s: Bad format\n", config.infile);
                 closeAndExit(1);
             }
 
@@ -143,14 +136,14 @@ void decompress(
         read_size = fread(&data_size, 2, 1, infile);
         if(read_size != 1)
         {
-            fprintf(stderr, "%s: Bad format\n", infilename);
+            fprintf(stderr, "%s: Bad format\n", config.infile);
             closeAndExit(1);
         }
 
         read_size = fread(buffer, 1, data_size, infile);
         if(read_size != data_size)
         {
-            fprintf(stderr, "%s: Bad format\n", infilename);
+            fprintf(stderr, "%s: Bad format\n", config.infile);
             closeAndExit(1);
         }
 

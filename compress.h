@@ -9,11 +9,6 @@
 #ifndef COMPRESS_H_
 #define COMPRESS_H_
 
-void compress(
-    const char *infilename,
-    const char *outfilename,
-    int block_size,
-    bool to_stdout,
-    bool verbose);
+void compress();
 
 #endif // COMPRESS_H_

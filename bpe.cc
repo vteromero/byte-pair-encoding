@@ -203,9 +203,9 @@ int main(int argc, char **argv)
     validateOptions(argc, argv, lastopt);
 
     if(config.compress_opt)
-        compress(config.infile, config.outfile, config.block_size, config.stdout_opt, config.verbose_opt);
+        compress();
     else if(config.decompress_opt)
-        decompress(config.infile, config.outfile, config.stdout_opt);
+        decompress();
 
     return 0;
 }
