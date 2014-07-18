@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <vector>
 #include "bpe.h"
+#include "endian.h"
 
 using namespace std;
 
@@ -164,10 +165,10 @@ static int writeBlock(
     for(int i=dict_size-1; i>=0; --i)
     {
         fwrite(&(dictionary[i].first), 1, 1, outfile);
-        fwrite(&(dictionary[i].second), 2, 1, outfile);
+        fwrite16(dictionary[i].second, outfile);
     }
 
-    fwrite(&data_size, 2, 1, outfile);
+    fwrite16(data_size, outfile);
 
     copy(byte_block.begin(), byte_block.end(), buffer);
     fwrite(buffer, 1, data_size, outfile);

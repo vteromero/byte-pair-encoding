@@ -13,6 +13,7 @@
 #include <list>
 #include <vector>
 #include "bpe.h"
+#include "endian.h"
 
 using namespace std;
 
@@ -123,8 +124,7 @@ void decompress()
                 closeAndExit(1);
             }
 
-            read_size = fread(&bytepair, 2, 1, infile);
-            if(read_size != 1)
+            if(!fread16(bytepair, infile))
             {
                 fprintf(stderr, "%s: Bad format\n", config.infile);
                 closeAndExit(1);
@@ -133,8 +133,7 @@ void decompress()
             dictionary.push_back(make_pair(byte, bytepair));
         }
 
-        read_size = fread(&data_size, 2, 1, infile);
-        if(read_size != 1)
+        if(!fread16(data_size, infile))
         {
             fprintf(stderr, "%s: Bad format\n", config.infile);
             closeAndExit(1);
