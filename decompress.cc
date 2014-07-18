@@ -35,6 +35,12 @@ static void closeAndExit(int exit_code)
     exit(exit_code);
 }
 
+static void badFormat()
+{
+    fprintf(stderr, "%s: Bad format\n", config.infile);
+    closeAndExit(1);
+}
+
 static int replaceBytes(
     uint8_t *buffer,
     int len,
@@ -110,41 +116,26 @@ void decompress()
             break;
 
         if(read_size != 1)
-        {
-            fprintf(stderr, "%s: Bad format\n", config.infile);
-            closeAndExit(1);
-        }
+            badFormat();
 
         for(int i=0; i<dict_size; ++i)
         {
             read_size = fread(&byte, 1, 1, infile);
             if(read_size != 1)
-            {
-                fprintf(stderr, "%s: Bad format\n", config.infile);
-                closeAndExit(1);
-            }
+                badFormat();
 
             if(!fread16(bytepair, infile))
-            {
-                fprintf(stderr, "%s: Bad format\n", config.infile);
-                closeAndExit(1);
-            }
+                badFormat();
 
             dictionary.push_back(make_pair(byte, bytepair));
         }
 
         if(!fread16(data_size, infile))
-        {
-            fprintf(stderr, "%s: Bad format\n", config.infile);
-            closeAndExit(1);
-        }
+            badFormat();
 
         read_size = fread(buffer, 1, data_size, infile);
         if(read_size != data_size)
-        {
-            fprintf(stderr, "%s: Bad format\n", config.infile);
-            closeAndExit(1);
-        }
+            badFormat();
 
         if(dict_size > 0)
             data_size = replaceBytes(buffer, data_size, dictionary);
