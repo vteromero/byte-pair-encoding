@@ -178,7 +178,6 @@ static int writeBlock(
 
 void compress()
 {
-    int num_blocks = 0;
     uint8_t buffer[config.block_size];
     size_t read_size;
     long long total_size=0, total_compressed_size=0;
@@ -215,8 +214,6 @@ void compress()
         compressBlock(buffer, read_size, byte_block, dictionary);
 
         total_compressed_size += writeBlock(outfile, byte_block, dictionary);
-
-        num_blocks++;
 
     } while(!feof(infile));
 
