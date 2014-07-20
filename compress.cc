@@ -204,9 +204,8 @@ void compress()
         }
     }
 
-    do
+    while((read_size = fread(buffer, sizeof(uint8_t), config.block_size, infile)))
     {
-        read_size = fread(buffer, sizeof(uint8_t), config.block_size, infile);
         total_size += read_size;
 
         list<uint8_t> byte_block;
@@ -214,8 +213,7 @@ void compress()
         compressBlock(buffer, read_size, byte_block, dictionary);
 
         total_compressed_size += writeBlock(outfile, byte_block, dictionary);
-
-    } while(!feof(infile));
+    }
 
     if(config.verbose_opt)
     {

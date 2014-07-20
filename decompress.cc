@@ -106,17 +106,12 @@ void decompress()
         }
     }
 
-    do
+    while((read_size = fread(&dict_size, 1, 1, infile)))
     {
-        vector<pair<uint8_t, uint16_t> > dictionary;
-
-        read_size = fread(&dict_size, 1, 1, infile);
-
-        if(feof(infile))
-            break;
-
         if(read_size != 1)
             badFormat();
+
+        vector<pair<uint8_t, uint16_t> > dictionary;
 
         for(int i=0; i<dict_size; ++i)
         {
@@ -141,8 +136,7 @@ void decompress()
             data_size = replaceBytes(buffer, data_size, dictionary);
 
         fwrite(buffer, 1, data_size, outfile);
-
-    } while(!feof(infile));
+    }
 
     closeAndExit(0);
 }
