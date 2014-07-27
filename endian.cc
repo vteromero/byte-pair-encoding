@@ -13,6 +13,11 @@ bool isBigEndian()
     return (p[0] == 0);
 }
 
+bool fwrite8(uint8_t value, FILE *file)
+{
+    return (fwrite(&value, 1, 1, file) == 1);
+}
+
 bool fwrite16(uint16_t value, FILE *file)
 {
     if(isBigEndian())
@@ -47,6 +52,11 @@ bool fwrite32(uint32_t value, FILE *file)
 
         return (fwrite(aux, 1, 4, file) == 4);
     }
+}
+
+bool fread8(uint8_t &value, FILE *file)
+{
+    return (fread(&value, 1, 1, file) == 1);
 }
 
 bool fread16(uint16_t &value, FILE *file)

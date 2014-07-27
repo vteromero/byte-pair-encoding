@@ -14,8 +14,10 @@
 
 bool isBigEndian();
 
+bool fwrite8(uint8_t value, FILE *file);
 bool fwrite16(uint16_t value, FILE *file);
 bool fwrite32(uint32_t value, FILE *file);
+bool fread8(uint8_t &value, FILE *file);
 bool fread16(uint16_t &value, FILE *file);
 bool fread32(uint32_t &value, FILE *file);
 

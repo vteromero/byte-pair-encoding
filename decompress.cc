@@ -106,17 +106,13 @@ void decompress()
         }
     }
 
-    while((read_size = fread(&dict_size, 1, 1, infile)))
+    while(fread8(dict_size, infile))
     {
-        if(read_size != 1)
-            badFormat();
-
         vector<pair<uint8_t, uint16_t> > dictionary;
 
         for(int i=0; i<dict_size; ++i)
         {
-            read_size = fread(&byte, 1, 1, infile);
-            if(read_size != 1)
+            if(!fread8(byte, infile))
                 badFormat();
 
             if(!fread16(bytepair, infile))

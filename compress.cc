@@ -160,11 +160,11 @@ static int writeBlock(
     uint8_t buffer[data_size];
     int block_size = 3 + 3 * dict_size + data_size;
 
-    fwrite(&dict_size, 1, 1, outfile);
+    fwrite8(dict_size, outfile);
 
     for(int i=dict_size-1; i>=0; --i)
     {
-        fwrite(&(dictionary[i].first), 1, 1, outfile);
+        fwrite8(dictionary[i].first, outfile);
         fwrite16(dictionary[i].second, outfile);
     }
 
