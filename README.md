@@ -4,7 +4,7 @@
 
 ###Requeriments
 
-Because **bpe** uses some features of c++11, you have to install a gcc version greater or equal to 4.3.
+* gcc >= 4.7
 
 ###Compiling
 
